@@ -2,7 +2,7 @@
 import { TableClient, TableEntity } from '@azure/data-tables';
 import { get } from 'http';
 
-const connectionString = process.env.StorageConnectionString;
+const connectionString = process.env.AzureWebJobsStorage;
 
 export const TableStorageHelper = {
     async saveEntity(table: string, entity: TableEntity): Promise<void> {
