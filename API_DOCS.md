@@ -1,5 +1,13 @@
 # API Documentation
 
+## API Endpoint
+
+The base URL for the API is:
+  
+  ```PlainText
+  https://devflashcardmngtapifnapp.azurewebsites.net
+  ```
+
 ## Get all modules
 
 - Endpoint: `GET /api/modules`
