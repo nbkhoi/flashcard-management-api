@@ -6,36 +6,23 @@ export async function DeleteModule(request: HttpRequest, context: InvocationCont
 
     const moduleRowKey = request.params.moduleRowKey;
     const modulePartitionKey = request.params.modulePartitionKey || DEFAULT_MODULE_PARTITION_KEY;
-    // Check if the module exists
-    const existingModule = await TableStorageHelper.getEntity('Modules', modulePartitionKey, moduleRowKey).then((data) => {
-        context.info(`Module found. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }`);
-        context.debug(`Existing module: ${JSON.stringify(existingModule)}`);
-        return data;
-    });
-    if (!existingModule) {
-        context.error(`Module not found. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }`);
+    context.info(`Found. Module deleting...`);
+    return TableStorageHelper.deleteEntity('Modules', modulePartitionKey, moduleRowKey).then(() => {
+        context.info(`Module deleted. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }`);
         return {
-            status: 404,
-            body: JSON.stringify({ message: `Module not found. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }` })
+            status: 200,
+            body: JSON.stringify({ message: `Module deleted. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }` })
         };
-    } else {
-        context.info(`Found. Module deleting...`);
-        return TableStorageHelper.deleteEntity('Modules', existingModule).then(() => {
-            context.info(`Module deleted. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }`);
-            return {
-                status: 200,
-                body: JSON.stringify({ message: `Module deleted. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }` })
-            };
-        }).catch((error) => {
-            context.error(`Delete failed. Error: ${error}`);
-            return {
-                status: 500,
-                body: JSON.stringify({ message: `Delete failed.`,
-                    error: error
-                })
-            };
-        });
-    }
+    }).catch((error) => {
+        context.error(`Failed to delete module with key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }. Error: ${error}`);
+        return {
+            status: 500,
+            body: JSON.stringify({
+                message: `Failed to delete module with key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }`,
+                error: error
+            })
+        };
+    });
 };
 
 app.http('DeleteModule', {

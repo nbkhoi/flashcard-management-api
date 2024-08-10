@@ -38,8 +38,8 @@ export const TableStorageHelper = {
         await client.updateEntity(entity);
     },
 
-    async deleteEntity(table: string, entity: TableEntity): Promise<void> {
+    async deleteEntity(table: string, partitionKey: string, rowKey: string): Promise<void> {
         const client = TableClient.fromConnectionString(connectionString, table);
-        await client.deleteEntity(entity.partitionKey, entity.rowKey);
+        await client.deleteEntity(partitionKey, rowKey);
     }
 }
