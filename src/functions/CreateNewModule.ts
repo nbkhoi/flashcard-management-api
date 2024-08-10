@@ -1,17 +1,15 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import * as modules from '../models/Modules';
 import * as uuid from 'uuid';
 import { TableStorageHelper } from "../libs/TableStorageHelper";
 import { DEFAULT_MODULE_PARTITION_KEY } from "../models/Constants";
+import { Module, ModuleEntity } from "../models/Modules";
 export async function CreateNewModule(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.info(`Http function processed request for url "${request.url}" with method "${request.method}"`);
 
-    // Get the request body
-    const data = await request.json() as modules.Module;
+    const data = await request.json() as Module;
     const title = data.title;
-    // Generate a new RowKey
     const rowKey = uuid.v4();
-    const moduleEntity: modules.ModuleEntity = {
+    const moduleEntity: ModuleEntity = {
         partitionKey: DEFAULT_MODULE_PARTITION_KEY,
         rowKey,
         title: title,
@@ -21,7 +19,6 @@ export async function CreateNewModule(request: HttpRequest, context: InvocationC
     context.debug(`Module: ${JSON.stringify(moduleEntity)}`);
     return TableStorageHelper.saveEntity('Modules', moduleEntity).then(() => {
         context.info(`Module created. RowKey: ${rowKey}`);
-        context.debug(`Module: ${JSON.stringify(moduleEntity)}`);
         return {
             status: 201,
             body: JSON.stringify({

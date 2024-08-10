@@ -7,20 +7,20 @@ This project is a RESTful API for managing flashcards. It is built using Azure F
 The API has the following endpoints:
 
 - `GET /api/modules` - Get all modules
-- `GET /api/modules/{moduleId}` - Get a module by id
+- `GET /api/modules/{modulePartitionKey}/{moduleRowKey}` - Get a module by id
 - `POST /api/modules` - Create a module
-- `PUT /api/modules/{moduleId}` - Update a module
-- `DELETE /api/modules/{moduleId}` - Delete a module
-- `GET /api/modules/{moduleId}/topics` - Get all topics for a module
-- `GET /api/modules/{moduleId}/topics/{topicId}` - Get a topic by id
-- `POST /api/modules/{moduleId}/topics` - Create a topic
-- `PUT /api/modules/{moduleId}/topics/{topicId}` - Update a topic
-- `DELETE /api/modules/{moduleId}/topics/{topicId}` - Delete a topic
-- `GET /api/modules/{moduleId}/topics/{topicId}/flashcards` - Get all flashcards for a topic
-- `GET /api/modules/{moduleId}/topics/{topicId}/flashcards/{flashcardId}` - Get a flashcard by id
-- `POST /api/modules/{moduleId}/topics/{topicId}/flashcards` - Create a flashcard
-- `PUT /api/modules/{moduleId}/topics/{topicId}/flashcards/{flashcardId}` - Update a flashcard
-- `DELETE /api/modules/{moduleId}/topics/{topicId}/flashcards/{flashcardId}` - Delete a flashcard
+- `PUT /api/modules/{modulePartitionKey}/{moduleRowKey}` - Update a module
+- `DELETE /api/modules/{modulePartitionKey}/{moduleRowKey}` - Delete a module
+- `GET /api/topics/{moduleRowKey}` - Get all topics for a module
+- `GET /api/topics/{topicPartitionKey}/{topicRowKey}` - Get a topic by id
+- `POST /api/topics` - Create a topic
+- `PUT /api/topics/{topicPartitionKey}/{topicRowKey}` - Update a topic
+- `DELETE /api/topics/{topicPartitionKey}/{topicRowKey}` - Delete a topic
+- `GET /api/flashcards/{topicRowKey}` - Get all flashcards for a topic
+- `GET /api/flashcards/{flashcardPartitionKey}/{flashcardRowKey}` - Get a flashcard by id
+- `POST /api/flashcards` - Create a flashcard
+- `PUT /api/flashcards/{flashcardPartitionKey}/{flashcardRowKey}` - Update a flashcard
+- `DELETE /api/flashcards/{flashcardPartitionKey}/{flashcardRowKey}` - Delete a flashcard
 
 ## Running the API locally
 
