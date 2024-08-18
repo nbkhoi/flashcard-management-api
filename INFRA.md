@@ -60,32 +60,20 @@
   az functionapp show --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashcardMngtApiRG --query "defaultHostName" --output tsv
   ```
 
+- Get Storage Account Connection String
+
+  ```bash
+  az storage account show-connection-string --name prodflashcardmngapitsa --resource-group ProdFlashcardMngtApiRG --query "connectionString" --output tsv
+  ```
+
 - Update the function app settings
 
   ```bash
-  az functionapp config appsettings set --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashcardMngtApiRG --settings AzureWebJobsStorage="DefaultEndpointsProtocol=https;AccountName=devflashcardmngtsa;AccountKey=<account-key>;TableEndpoint=https://devflashcardmngtsa.table.core.windows.net/;QueueEndpoint=https://devflashcardmngtsa.queue.core.windows.net/;FileEndpoint=https://devflashcardmngtsa.file.core.windows.net/;BlobEndpoint=https://devflashcardmngtsa.blob.core.windows.net/" AzureWebJobsSecretStorageType=Blob
+  az functionapp config appsettings set --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashcardMngtApiRG --settings AzureWebJobsStorage="< Storage Account Connection String >" AzureWebJobsSecretStorageType=Blob StorageConnectionString=" < Storage Account Connection String >"
   ```
 
 - Update the function app CORS settings
 
   ```bash
-  az functionapp cors add --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashcardMngtApiRG --allowed-origins "*"
-  ```
-
-- Update the function app runtime settings
-
-  ```bash
-  az functionapp config appsettings set --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashcardMngtApiRG --settings FUNCTIONS_WORKER_RUNTIME=node
-  ```
-
-- Update the function app runtime version
-
-  ```bash
-  az functionapp config appsettings set --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashcardMngtApiRG --settings FUNCTIONS_EXTENSION_VERSION=~4
-  ```
-
-- Update the function app node version
-
-  ```bash
-  az functionapp config appsettings set --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashcardMngtApiRG --settings WEBSITE_NODE_DEFAULT_VERSION=18
+  az functionapp cors add --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashcardMngtApiRG --allowed-origins "http://localhost:4200"
   ```
