@@ -33,6 +33,15 @@ export const TableStorageHelper = {
         return await client.getEntity(partitionKey, rowKey);
     },
 
+    async queryEntities(table: string, query: string): Promise<TableEntity[]> {
+        const client = TableClient.fromConnectionString(connectionString, table);
+        const entities = [];
+        for await (const entity of client.listEntities({ queryOptions: { filter: query } })) {
+            entities.push(entity);
+        }
+        return entities;
+    },
+
     async updateEntity(table: string, entity: TableEntity): Promise<void> {
         const client = TableClient.fromConnectionString(connectionString, table);
         await client.updateEntity(entity);

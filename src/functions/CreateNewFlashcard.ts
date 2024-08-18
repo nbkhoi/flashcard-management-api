@@ -2,6 +2,7 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 import { Flashcard } from "../models/Flashcards";
 import * as uuid from 'uuid';
 import { TableStorageHelper } from "../libs/TableStorageHelper";
+import { ConsitencyHelper } from "../libs/ConsitencyHelper";
 import { AccessTier } from "../models/Enums";
 
 export async function CreateNewFlashcard(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
@@ -41,6 +42,7 @@ export async function CreateNewFlashcard(request: HttpRequest, context: Invocati
     context.debug(`Flashcard: ${JSON.stringify(flashcardEntity)}`);
     return TableStorageHelper.saveEntity('Flashcards', flashcardEntity).then(() => {
         context.info(`Flashcard created. RowKey: ${flashcardEntity.rowKey}`);
+        ConsitencyHelper.updateTopicFlashcardCount(topic.rowKey, topic.partitionKey);
         return {
             status: 201,
             body: JSON.stringify({

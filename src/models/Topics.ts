@@ -10,6 +10,7 @@ export type Topic = {
     };
     title: string;
     description?: string;
+    flashcardCount?: number;
     ordinal?: number;
     accessTier?: AccessTier;
     disabled?: boolean;
