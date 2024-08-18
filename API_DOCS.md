@@ -86,6 +86,7 @@ The base URL for the API is:
       };
       title: string;
       description?: string;
+      flashcardCount?: number;    // Number of flashcards in the topic. Always 0 when creating a new topic.
       ordinal?: number;           // Ordinal number of the topic.
       accessTier?: AccessTier;    // "community" or "commercial". Default is "commercial"
       disabled?: boolean;         // If the topic is disabled. Default is false
