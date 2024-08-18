@@ -1,5 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { TableStorageHelper } from "../libs/TableStorageHelper";
+import { ConsitencyHelper } from "../libs/ConsitencyHelper";
 
 export async function DeleteFlashcard(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
@@ -9,6 +10,7 @@ export async function DeleteFlashcard(request: HttpRequest, context: InvocationC
     context.info(`Flashcard deleting...`);
     return TableStorageHelper.deleteEntity('Flashcards', flashcardPartitionKey, flashcardRowKey).then(() => {
         context.info(`Flashcard deleted. Key: { partitionKey: ${flashcardPartitionKey}, rowKey: ${flashcardRowKey} }`);
+        ConsitencyHelper.updateTopicFlashcardCount(flashcardPartitionKey);
         return {
             status: 204
         };
