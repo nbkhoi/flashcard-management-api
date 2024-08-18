@@ -10,8 +10,7 @@ export async function DeleteTopic(request: HttpRequest, context: InvocationConte
     return TableStorageHelper.deleteEntity('Topics', topicPartitionKey, topicRowKey).then(() => {
         context.info(`Topic deleted. Key: { partitionKey: '${topicPartitionKey}', rowKey: '${topicRowKey}' }`);
         return {
-            status: 200,
-            body: JSON.stringify({ message: `Topic deleted. Key: { partitionKey: '${topicPartitionKey}', rowKey: '${topicRowKey}' }` })
+            status: 204
         };
     }).catch((error) => {
         context.error(`Failed to delete topic with key: { partitionKey: '${topicPartitionKey}', rowKey: '${topicRowKey}' }. Error: ${error}`);

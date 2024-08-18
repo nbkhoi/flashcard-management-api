@@ -10,8 +10,7 @@ export async function DeleteModule(request: HttpRequest, context: InvocationCont
     return TableStorageHelper.deleteEntity('Modules', modulePartitionKey, moduleRowKey).then(() => {
         context.info(`Module deleted. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }`);
         return {
-            status: 200,
-            body: JSON.stringify({ message: `Module deleted. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }` })
+            status: 204
         };
     }).catch((error) => {
         context.error(`Failed to delete module with key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }. Error: ${error}`);

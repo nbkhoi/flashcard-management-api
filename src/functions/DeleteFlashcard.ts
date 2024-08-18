@@ -10,12 +10,7 @@ export async function DeleteFlashcard(request: HttpRequest, context: InvocationC
     return TableStorageHelper.deleteEntity('Flashcards', flashcardPartitionKey, flashcardRowKey).then(() => {
         context.info(`Flashcard deleted. Key: { partitionKey: ${flashcardPartitionKey}, rowKey: ${flashcardRowKey} }`);
         return {
-            status: 200,
-            body: JSON.stringify({
-                message: "Flashcard deleted",
-                partitionKey: flashcardPartitionKey,
-                rowKey: flashcardRowKey
-            })
+            status: 204
         };
     }).catch(err => {
         context.error(`Failed to delete flashcard with key: { partitionKey: ${flashcardPartitionKey}, rowKey: ${flashcardRowKey} }. Error: ${err}`);

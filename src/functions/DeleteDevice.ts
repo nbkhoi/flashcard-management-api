@@ -20,8 +20,7 @@ export async function DeleteDevice(request: HttpRequest, context: InvocationCont
             context.info(`Device deleted. Key: { partitionKey: '${devicePartitionKey}', rowKey: '${deviceRowKey}' }`);
             context.debug(`Deleted device: ${JSON.stringify(existingDevice)}`);
             return {
-                status: 200,
-                body: JSON.stringify(existingDevice)
+                status: 204,
             };
         }).catch((error) => {
             context.error(`Delete failed. Error: ${error}`);
