@@ -10,7 +10,7 @@ export async function UpdateTopic(request: HttpRequest, context: InvocationConte
     const data = await request.json() as Topic;
     const existingTopic = await TableStorageHelper.getEntity('Topics', topicPartitionKey, topicRowKey).then((data) => {
         context.info(`Topic found. RowKey '${topicRowKey}'`);
-        context.debug(`Existing topic: ${JSON.stringify(existingTopic)}`);
+        context.debug(`Existing topic: ${JSON.stringify(data)}`);
         return data as TopicEntity;
     });
     if (!existingTopic) {
@@ -23,6 +23,13 @@ export async function UpdateTopic(request: HttpRequest, context: InvocationConte
         const updates: Partial<TopicEntity> = {
             ...data
         };
+        if ( 'title' in updates && updates.title !== existingTopic.title ) {
+            const flashcards = await TableStorageHelper.getEntitiesByPartitionKey('Flashcards', topicRowKey) as TopicEntity[];
+            for (const flashcard of flashcards) {
+                const updatedFlashcard = { ...flashcard, topic: updates.title };
+                TableStorageHelper.updateEntity('Flashcards', updatedFlashcard);
+            }
+        }
         const updatedTopic = { ...existingTopic, ...updates } as TopicEntity;
         return TableStorageHelper.updateEntity('Topics', updatedTopic).then(() => {
             context.info(`Topic updated. Key: { partitionKey: '${topicPartitionKey}', rowKey: '${topicRowKey}' }`);
@@ -44,7 +51,7 @@ export async function UpdateTopic(request: HttpRequest, context: InvocationConte
 };
 
 app.http('UpdateTopic', {
-    methods: ['PUT'],
+    methods: ['PATCH'],
     route: 'topics/{topicPartitionKey}/{topicRowKey}',
     authLevel: 'anonymous',
     handler: UpdateTopic

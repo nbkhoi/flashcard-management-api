@@ -2,12 +2,16 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 import { Flashcard } from "../models/Flashcards";
 import * as uuid from 'uuid';
 import { TableStorageHelper } from "../libs/TableStorageHelper";
+import { AccessTier } from "../models/Enums";
 
 export async function CreateNewFlashcard(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
 
     const {module, topic, ...flashcard} = await request.json() as Flashcard;
     const word = flashcard.word;
+    const ordinal = flashcard.ordinal??undefined;
+    const accessTier = flashcard.accessTier??AccessTier.COMMERCIAL;
+    const disabled = flashcard.disabled??false;
     if (!module || !module.partitionKey || !module.rowKey) {
         const errMessage = `Flashcard must be associated with a module.`;
         context.error(errMessage);
@@ -28,6 +32,9 @@ export async function CreateNewFlashcard(request: HttpRequest, context: Invocati
         rowKey: uuid.v4(),
         module: module.title,
         topic: topic.title,
+        ordinal: ordinal,
+        accessTier: accessTier,
+        disabled: disabled,
         ...flashcard
     };
     context.info(`Flashcard creating...`);

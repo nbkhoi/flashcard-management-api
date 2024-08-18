@@ -1,4 +1,5 @@
 import { TableEntity } from "@azure/data-tables";
+import { AccessTier } from "./Enums";
 
 export type Flashcard = {
     module: {
@@ -13,13 +14,16 @@ export type Flashcard = {
     };
     word: string;
     partOfSpeech: string;
-    ipaUk: string;
-    ipaUs: string;
-    pronUk: string;
-    pronUs: string;
+    ipaUk?: string;
+    ipaUs?: string;
+    pronUk?: string;
+    pronUs?: string;
     definition: string;
-    meaningVi: string;
-    exampleSentence: string;
+    meaningVi?: string;
+    exampleSentence?: string;
+    ordinal?: number;
+    accessTier?: AccessTier;
+    disabled?: boolean;
 } 
 
 export type FlashcardEntity = TableEntity & Flashcard;

@@ -1,5 +1,6 @@
 import { TableClient, TableEntity } from "@azure/data-tables";
 import { ModuleEntity } from "./Modules";
+import { AccessTier } from "./Enums";
 
 export type Topic = {
     module: {
@@ -9,8 +10,9 @@ export type Topic = {
     };
     title: string;
     description?: string;
+    ordinal?: number;
+    accessTier?: AccessTier;
     disabled?: boolean;
-    isPremium?: boolean;
 }
 
 export type TopicEntity = TableEntity & Topic;

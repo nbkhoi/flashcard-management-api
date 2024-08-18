@@ -10,7 +10,7 @@ export async function UpdateFlashcard(request: HttpRequest, context: InvocationC
     const data = await request.json() as Flashcard;
     const existingFlashcard = await TableStorageHelper.getEntity('Flashcards', flashcardPartitionKey, flashcardRowKey).then((data) => {
         context.info(`Flashcard found. RowKey '${flashcardRowKey}'`);
-        context.debug(`Existing flashcard: ${JSON.stringify(existingFlashcard)}`);
+        context.debug(`Existing flashcard: ${JSON.stringify(data)}`);
         return data as FlashcardEntity;
     });
     if (!existingFlashcard) {
@@ -44,7 +44,7 @@ export async function UpdateFlashcard(request: HttpRequest, context: InvocationC
 };
 
 app.http('UpdateFlashcard', {
-    methods: ['PUT'],
+    methods: ['PATCH'],
     route: 'flashcards/{flashcardPartitionKey}/{flashcardRowKey}',
     authLevel: 'anonymous',
     handler: UpdateFlashcard
