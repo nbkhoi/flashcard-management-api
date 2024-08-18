@@ -177,3 +177,49 @@ The base URL for the API is:
   - `flashcardPartitionKey`: The partition key of the flashcard.
   - `flashcardRowKey`: The row key of the flashcard.
 - Response: No content.
+
+## Get all devices
+
+- Endpoint: `GET /api/devices`
+- Description: Retrieves all devices.
+- Response: JSON array containing all devices.
+
+## Get a device by id
+
+- Endpoint: `GET /api/devices/DEFAULT/{deviceRowKey}`
+- Description: Retrieves a device by its id.
+- Parameters:
+  - `deviceRowKey`: The row key of the device.
+- Response: JSON object representing the device.
+
+## Create a device
+
+- Endpoint: `POST /api/devices`
+- Description: Creates a new device.
+- Request body: JSON object containing the device data.
+  {
+    deviceId: string;
+    comment?: string;
+    isPremium?: boolean;
+    disabled?: boolean;
+  }
+- Response: JSON object representing the created device.
+
+## Update a device
+
+- Endpoint: `PATCH /api/devices/{devicePartitionKey}/{deviceRowKey}`
+- Description: Updates an existing device.
+- Parameters:
+  - `devicePartitionKey`: The partition key of the device.
+  - `deviceRowKey`: The row key of the device.
+- Request body: JSON object containing the updated device data.
+- Response: JSON object representing the updated device.
+
+## Delete a device
+
+- Endpoint: `DELETE /api/devices/{devicePartitionKey}/{deviceRowKey}`
+- Description: Deletes a device.
+- Parameters:
+  - `devicePartitionKey`: The partition key of the device.
+  - `deviceRowKey`: The row key of the device.
+- Response: No content.
