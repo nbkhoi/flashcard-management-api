@@ -16,10 +16,9 @@ The base URL for the API is:
 
 ## Get a module by id
 
-- Endpoint: `GET /api/modules/{modulePartitionKey}/{moduleRowKey}`
+- Endpoint: `GET /api/modules/DEFAULT/{moduleRowKey}`
 - Description: Retrieves a module by its id.
 - Parameters:
-  - `modulePartitionKey`: The partition key of the module.
   - `moduleRowKey`: The row key of the module.
 - Response: JSON object representing the module.
 
@@ -28,11 +27,19 @@ The base URL for the API is:
 - Endpoint: `POST /api/modules`
 - Description: Creates a new module.
 - Request body: JSON object containing the module data.
+  {
+    title: string;
+    thumbnail?: string;       // URL to the thumbnail image
+    description?: string;
+    ordinal?: number;         // Ordinal number of the module.
+    accessTier?: AccessTier;  // "community" or "commercial". Default is "commercial"
+    disabled?: boolean;       // If the module is disabled. Default is false
+  }
 - Response: JSON object representing the created module.
 
 ## Update a module
 
-- Endpoint: `PUT /api/modules/{modulePartitionKey}/{moduleRowKey}`
+- Endpoint: `PATCH /api/modules/{modulePartitionKey}/{moduleRowKey}`
 - Description: Updates an existing module.
 - Parameters:
   - `modulePartitionKey`: The partition key of the module.
@@ -71,11 +78,23 @@ The base URL for the API is:
 - Endpoint: `POST /api/topics`
 - Description: Creates a new topic.
 - Request body: JSON object containing the topic data.
+  {
+      module: {
+          partitionKey: string;
+          rowKey: string;
+          title: string;
+      };
+      title: string;
+      description?: string;
+      ordinal?: number;           // Ordinal number of the topic.
+      accessTier?: AccessTier;    // "community" or "commercial". Default is "commercial"
+      disabled?: boolean;         // If the topic is disabled. Default is false
+  }
 - Response: JSON object representing the created topic.
 
 ## Update a topic
 
-- Endpoint: `PUT /api/topics/{topicPartitionKey}/{topicRowKey}`
+- Endpoint: `PATCH /api/topics/{topicPartitionKey}/{topicRowKey}`
 - Description: Updates an existing topic.
 - Parameters:
   - `topicPartitionKey`: The partition key of the topic.
@@ -114,11 +133,35 @@ The base URL for the API is:
 - Endpoint: `POST /api/flashcards`
 - Description: Creates a new flashcard.
 - Request body: JSON object containing the flashcard data.
+  {
+      module: {
+          partitionKey: string;
+          rowKey: string;
+          title: string;
+      };
+      topic: {
+          partitionKey: string;
+          rowKey: string;
+          title: string;
+      };
+      word: string;
+      partOfSpeech: string;
+      definition: string;
+      ipaUk?: string;
+      ipaUs?: string;
+      pronUk?: string;
+      pronUs?: string;
+      meaningVi?: string;
+      exampleSentence?: string;
+      ordinal?: number;             // Ordinal number of the flashcard.
+      accessTier?: AccessTier;      // "community" or "commercial". Default is "commercial"
+      disabled?: boolean;           // If the flashcard is disabled. Default is false
+  }
 - Response: JSON object representing the created flashcard.
 
 ## Update a flashcard
 
-- Endpoint: `PUT /api/flashcards/{flashcardPartitionKey}/{flashcardRowKey}`
+- Endpoint: `PATCH /api/flashcards/{flashcardPartitionKey}/{flashcardRowKey}`
 - Description: Updates an existing flashcard.
 - Parameters:
   - `flashcardPartitionKey`: The partition key of the flashcard.

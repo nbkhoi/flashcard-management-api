@@ -2,6 +2,7 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 import { Module, ModuleEntity } from "../models/Modules";
 import { TableStorageHelper } from "../libs/TableStorageHelper";
 import { DEFAULT_MODULE_PARTITION_KEY } from "../models/Constants";
+import { TopicEntity } from "../models/Topics";
 
 export async function UpdateModule(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
@@ -11,7 +12,7 @@ export async function UpdateModule(request: HttpRequest, context: InvocationCont
     const data = await request.json() as Module;
     const existingModule = await TableStorageHelper.getEntity('Modules', modulePartitionKey, moduleRowKey).then((data) => {
         context.info(`Module found. RowKey '${moduleRowKey}'`);
-        context.debug(`Existing module: ${JSON.stringify(existingModule)}`);
+        context.debug(`Existing module: ${JSON.stringify(data)}`);
         return data as ModuleEntity;
     });
     if (!existingModule) {
@@ -24,6 +25,18 @@ export async function UpdateModule(request: HttpRequest, context: InvocationCont
         const updates: Partial<ModuleEntity> = {
             ...data
         };
+        if ( 'title' in updates && updates.title !== existingModule.title ) {
+            const topics = await TableStorageHelper.getEntitiesByPartitionKey('Topics', moduleRowKey) as TopicEntity[];
+            for (const topic of topics) {
+                const updatedTopic = { ...topic, module: updates.title };
+                TableStorageHelper.updateEntity('Topics', updatedTopic);
+                const flashcards = await TableStorageHelper.getEntitiesByPartitionKey('Flashcards', topic.rowKey) as TopicEntity[];
+                for (const flashcard of flashcards) {
+                    const updatedFlashcard = { ...flashcard, module: updates.title };
+                    TableStorageHelper.updateEntity('Flashcards', updatedFlashcard);
+                }
+            }
+        }
         const updatedModule = { ...existingModule, ...updates } as ModuleEntity;
         return TableStorageHelper.updateEntity('Modules', updatedModule).then(() => {
             context.info(`Module updated. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }`);
@@ -45,7 +58,7 @@ export async function UpdateModule(request: HttpRequest, context: InvocationCont
 };
 
 app.http('UpdateModule', {
-    methods: ['PUT'],
+    methods: ['PATCH'],
     route: 'modules/{modulePartitionKey}/{moduleRowKey}',
     authLevel: 'anonymous',
     handler: UpdateModule

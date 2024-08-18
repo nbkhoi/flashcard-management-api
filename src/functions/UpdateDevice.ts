@@ -52,7 +52,7 @@ export async function UpdateDevice(request: HttpRequest, context: InvocationCont
 };
 
 app.http('UpdateDevice', {
-    methods: ['PUT'],
+    methods: ['PATCH'],
     route: 'devices/{devicePartitionKey}/{deviceRowKey}',
     authLevel: 'anonymous',
     handler: UpdateDevice

@@ -3,16 +3,23 @@ import * as uuid from 'uuid';
 import { TableStorageHelper } from "../libs/TableStorageHelper";
 import { DEFAULT_MODULE_PARTITION_KEY } from "../models/Constants";
 import { Module, ModuleEntity } from "../models/Modules";
+import { AccessTier } from "../models/Enums";
 export async function CreateNewModule(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.info(`Http function processed request for url "${request.url}" with method "${request.method}"`);
 
     const data = await request.json() as Module;
     const title = data.title;
+    const ordinal = data.ordinal??undefined;
+    const accessTier = data.accessTier??AccessTier.COMMERCIAL;
+    const disabled = data.disabled??false;
     const rowKey = uuid.v4();
     const moduleEntity: ModuleEntity = {
         partitionKey: DEFAULT_MODULE_PARTITION_KEY,
         rowKey,
         title: title,
+        ordinal: ordinal,
+        accessTier: accessTier,
+        disabled: disabled,
         ...data
     };
     context.info(`Module creating...`);
