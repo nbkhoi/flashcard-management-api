@@ -3,9 +3,17 @@
 ## API Endpoint
 
 The base URL for the API is:
-  
+
+- Development:
+
   ```PlainText
   https://devflashcardmngtapifnapp.azurewebsites.net
+  ```
+
+- Production:
+
+  ```PlainText
+  https://prodflashcardmngtapifnapp.azurewebsites.net
   ```
 
 ## Get all modules
