@@ -42,6 +42,12 @@
   az storage table create --name Devices --account-name prodflashvocabsa
   ```
 
+- Create Modules blob container
+
+  ```bash
+  az storage container create --name modules --account-name prodflashvocabsa
+  ```
+
 - Create a function app
 
   ```bash
@@ -69,7 +75,7 @@
 - Update the function app settings
 
   ```bash
-  az functionapp config appsettings set --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashVocabRG --settings AzureWebJobsStorage="< Storage Account Connection String >" AzureWebJobsSecretStorageType=Blob StorageConnectionString=" < Storage Account Connection String >"
+  az functionapp config appsettings set --name ProdFlashcardMngtApiFnApp --resource-group ProdFlashVocabRG --settings AzureWebJobsStorage="< Storage Account Connection String >" AzureWebJobsSecretStorageType=Blob StorageConnectionString=" < Storage Account Connection String >" BLOB_CONTAINER_NAME="modules" TABLE_NAME="Modules" TOPICS_TABLE_NAME="Topics" FLASHCARDS_TABLE_NAME="Flashcards" DEVICES_TABLE_NAME="Devices"
   ```
 
 - Update the function app CORS settings
