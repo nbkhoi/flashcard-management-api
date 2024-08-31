@@ -7,7 +7,7 @@ export async function UpdateDevice(request: HttpRequest, context: InvocationCont
 
     const devicePartitionKey = request.params.devicePartitionKey;
     const deviceRowKey = request.params.deviceRowKey;
-    const data = await request.json() as Device;
+    const data = await request.json() as Partial<Device>;
     const { deviceId, ...rest } = data;
     const existingDevice = await TableStorageHelper.getEntity('Devices', devicePartitionKey, deviceRowKey);
     if (!existingDevice) {

@@ -1,13 +1,33 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { Flashcard, FlashcardEntity } from "../models/Flashcards";
 import { TableStorageHelper } from "../libs/TableStorageHelper";
+import { AccessTier } from "../models/Enums";
 
 export async function UpdateFlashcard(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
 
     const flashcardPartitionKey = request.params.flashcardPartitionKey;
     const flashcardRowKey = request.params.flashcardRowKey;
-    const data = await request.json() as Flashcard;
+    const data = await request.json() as Partial<Flashcard>;
+    
+    if ( 'ordinal' in data ) {
+        data.ordinal = parseInt(data.ordinal as unknown as string);
+    }
+
+    if ( 'accessTier' in data ) {
+        if ( !Object.values(AccessTier).includes(data.accessTier as AccessTier) ) {
+            context.error(`Invalid accessTier value: ${data.accessTier}`);
+            return {
+                status: 400,
+                body: JSON.stringify({ message: `Invalid accessTier value: ${data.accessTier}` })
+            };
+        }
+    }
+    
+    if ( 'disabled' in data ) {
+        data.disabled = data.disabled as unknown === 'true';
+    }
+
     const existingFlashcard = await TableStorageHelper.getEntity('Flashcards', flashcardPartitionKey, flashcardRowKey).then((data) => {
         context.info(`Flashcard found. RowKey '${flashcardRowKey}'`);
         context.debug(`Existing flashcard: ${JSON.stringify(data)}`);

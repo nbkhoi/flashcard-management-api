@@ -3,13 +3,33 @@ import { Module, ModuleEntity } from "../models/Modules";
 import { TableStorageHelper } from "../libs/TableStorageHelper";
 import { DEFAULT_MODULE_PARTITION_KEY } from "../models/Constants";
 import { TopicEntity } from "../models/Topics";
+import { AccessTier } from "../models/Enums";
 
 export async function UpdateModule(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
 
     const moduleRowKey = request.params.moduleRowKey;
     const modulePartitionKey = request.params.modulePartitionKey || DEFAULT_MODULE_PARTITION_KEY;
-    const data = await request.json() as Module;
+    const data = await request.json() as Partial<Module>;
+    
+    if ( 'ordinal' in data ) {
+        data.ordinal = parseInt(data.ordinal as unknown as string);
+    }
+
+    if ( 'accessTier' in data ) {
+        if ( !Object.values(AccessTier).includes(data.accessTier as AccessTier) ) {
+            context.error(`Invalid accessTier value: ${data.accessTier}`);
+            return {
+                status: 400,
+                body: JSON.stringify({ message: `Invalid accessTier value: ${data.accessTier}` })
+            };
+        }
+    }
+    
+    if ( 'disabled' in data ) {
+        data.disabled = data.disabled as unknown === 'true';
+    }
+
     const existingModule = await TableStorageHelper.getEntity('Modules', modulePartitionKey, moduleRowKey).then((data) => {
         context.info(`Module found. RowKey '${moduleRowKey}'`);
         context.debug(`Existing module: ${JSON.stringify(data)}`);
@@ -22,7 +42,7 @@ export async function UpdateModule(request: HttpRequest, context: InvocationCont
             body: JSON.stringify({ message: `Module not found. Key: { partitionKey: '${modulePartitionKey}', rowKey: '${moduleRowKey}' }` })
         };
     } else {
-        const updates: Partial<ModuleEntity> = {
+        const updates = {
             ...data
         };
         if ( 'title' in updates && updates.title !== existingModule.title ) {

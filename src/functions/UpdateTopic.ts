@@ -1,13 +1,33 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { Topic, TopicEntity } from "../models/Topics";
 import { TableStorageHelper } from "../libs/TableStorageHelper";
+import { AccessTier } from "../models/Enums";
 
 export async function UpdateTopic(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
 
     const topicRowKey = request.params.topicRowKey;
     const topicPartitionKey = request.params.topicPartitionKey;
-    const data = await request.json() as Topic;
+    const data = await request.json() as Partial<Topic>;
+    
+    if ( 'ordinal' in data ) {
+        data.ordinal = parseInt(data.ordinal as unknown as string);
+    }
+
+    if ( 'accessTier' in data ) {
+        if ( !Object.values(AccessTier).includes(data.accessTier as AccessTier) ) {
+            context.error(`Invalid accessTier value: ${data.accessTier}`);
+            return {
+                status: 400,
+                body: JSON.stringify({ message: `Invalid accessTier value: ${data.accessTier}` })
+            };
+        }
+    }
+    
+    if ( 'disabled' in data ) {
+        data.disabled = data.disabled as unknown === 'true';
+    }
+
     const existingTopic = await TableStorageHelper.getEntity('Topics', topicPartitionKey, topicRowKey).then((data) => {
         context.info(`Topic found. RowKey '${topicRowKey}'`);
         context.debug(`Existing topic: ${JSON.stringify(data)}`);
@@ -20,7 +40,7 @@ export async function UpdateTopic(request: HttpRequest, context: InvocationConte
             body: JSON.stringify({ message: `Topic not found. Key: { partitionKey: '${topicPartitionKey}', rowKey: '${topicRowKey}' }` })
         };
     } else {
-        const updates: Partial<TopicEntity> = {
+        const updates = {
             ...data
         };
         if ( 'title' in updates && updates.title !== existingTopic.title ) {
