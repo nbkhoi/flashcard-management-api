@@ -26,9 +26,7 @@ export async function UpdateModule(request: HttpRequest, context: InvocationCont
         }
     }
     
-    if ( 'disabled' in data ) {
-        data.disabled = data.disabled as unknown === 'true';
-    }
+    
 
     const existingModule = await TableStorageHelper.getEntity('Modules', modulePartitionKey, moduleRowKey).then((data) => {
         context.info(`Module found. RowKey '${moduleRowKey}'`);
@@ -53,6 +51,18 @@ export async function UpdateModule(request: HttpRequest, context: InvocationCont
                 const flashcards = await TableStorageHelper.getEntitiesByPartitionKey('Flashcards', topic.rowKey) as TopicEntity[];
                 for (const flashcard of flashcards) {
                     const updatedFlashcard = { ...flashcard, module: updates.title };
+                    TableStorageHelper.updateEntity('Flashcards', updatedFlashcard);
+                }
+            }
+        }
+        if ( 'disabled' in updates && updates.disabled !== existingModule.disabled ) {
+            const topics = await TableStorageHelper.getEntitiesByPartitionKey('Topics', moduleRowKey) as TopicEntity[];
+            for (const topic of topics) {
+                const updatedTopic = { ...topic, disabled: updates.disabled };
+                TableStorageHelper.updateEntity('Topics', updatedTopic);
+                const flashcards = await TableStorageHelper.getEntitiesByPartitionKey('Flashcards', topic.rowKey) as TopicEntity[];
+                for (const flashcard of flashcards) {
+                    const updatedFlashcard = { ...flashcard, disabled: updates.disabled };
                     TableStorageHelper.updateEntity('Flashcards', updatedFlashcard);
                 }
             }
